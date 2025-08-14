@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index",
-    "dev": "nodemon src/index"
+    "dev": "nodemon src/index",
+    "start:prod": "node src/index.js",
+    "build": "echo 'No build step needed for pure Node.js backend'"
   },
   "keywords": [],
   "author": "",
