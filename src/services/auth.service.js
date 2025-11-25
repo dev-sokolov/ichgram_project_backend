@@ -55,11 +55,17 @@ export const addUser = async (data) => {
     const hashPassword = await bcrypt.hash(password, 10);
     const verificationCode = nanoid();
     const newUser = await User.create({ ...data, password: hashPassword, verificationCode });
+
     const verifyEmail = {
-        to: [email],
+        to: email,
+        // to: "vaquero1master@gmail.com",
         subject: "Verify email",
-        html: `<a href="${FRONTEND_URL}?verificationCode=${verificationCode}" target="_blank">Click verify email</a>`
-    }
+        html: `
+            <h1>Verify your email</h1>
+            <p>Click the link below to verify your account:</p>
+            <a href="${FRONTEND_URL}?verificationCode=${verificationCode}" target="_blank">Verify Email</a>
+        `
+    };
 
     await sendEmailWithNodemailer(verifyEmail);
 
