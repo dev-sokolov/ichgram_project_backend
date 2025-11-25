@@ -54,7 +54,15 @@ export const addUser = async (data) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
     const verificationCode = nanoid();
-    const newUser = await User.create({ ...data, password: hashPassword, verificationCode });
+    const isProduction = process.env.NODE_ENV === "production"; // стало
+    const verify = isProduction ? true : false; // стало
+    // const newUser = await User.create({ ...data, password: hashPassword, verificationCode }); // было
+    const newUser = await User.create({  // стало
+        ...data,
+        password: hashPassword,
+        verificationCode,
+        verify,
+    });
 
     const verifyEmail = {
         to: email,
@@ -67,7 +75,7 @@ export const addUser = async (data) => {
         `
     };
 
-    // await sendEmailWithNodemailer(verifyEmail);
+    // await sendEmailWithNodemailer(verifyEmail);               // было
     // --------------------------------------------------------
 
     // Отправляем письмо через try/catch
@@ -79,16 +87,25 @@ export const addUser = async (data) => {
     //     // Можно добавить поле user.emailSent = false и сохранять, если нужно
     // }
 
-    try {
-        // Локально и на Render выводим ссылку в консоль
-        console.log(`Verification email link for ${email}: ${FRONTEND_URL}?verificationCode=${verificationCode}`);
-        // Если хочешь, можно оставить sendEmailWithNodemailer только для локалки
-        if (process.env.NODE_ENV === "development") {
+    // try {
+    //     // Локально и на Render выводим ссылку в консоль
+    //     console.log(`Verification email link for ${email}: ${FRONTEND_URL}?verificationCode=${verificationCode}`);
+    //     // Если хочешь, можно оставить sendEmailWithNodemailer только для локалки
+    //     if (process.env.NODE_ENV === "development") {
+    //         await sendEmailWithNodemailer(verifyEmail);
+    //     }
+    // } catch (error) {
+    //     console.error("Email sending failed:", error);
+    // }
+    if (!isProduction) {
+        try {
+            console.log(`Verification email link for ${email}: ${FRONTEND_URL}?verificationCode=${verificationCode}`);
             await sendEmailWithNodemailer(verifyEmail);
+        } catch (error) {
+            console.error("Email sending failed:", error);
         }
-    } catch (error) {
-        console.error("Email sending failed:", error);
     }
+
 
     // --------------------------------------------------------
 
