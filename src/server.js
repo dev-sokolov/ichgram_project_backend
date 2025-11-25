@@ -60,14 +60,25 @@ const startServer = () => {
   });
 
   // слушаем изменения в MongoDB (для сообщений)
-  Message.watch().on("change", (data) => {
-    if (data.operationType === "insert") {
-      const newMessage = data.fullDocument;
+  // Message.watch().on("change", (data) => {
+  //   if (data.operationType === "insert") {
+  //     const newMessage = data.fullDocument;
 
-      io.to(newMessage.recipient.toString()).emit("new_message", newMessage);
-      io.to(newMessage.sender.toString()).emit("message_sent", newMessage);
-    }
-  });
+  //     io.to(newMessage.recipient.toString()).emit("new_message", newMessage);
+  //     io.to(newMessage.sender.toString()).emit("message_sent", newMessage);
+  //   }
+  // });
+
+  if (process.env.NODE_ENV !== "production") {
+    Message.watch().on("change", (data) => {
+      if (data.operationType === "insert") {
+        const newMessage = data.fullDocument;
+
+        io.to(newMessage.recipient.toString()).emit("new_message", newMessage);
+        io.to(newMessage.sender.toString()).emit("message_sent", newMessage);
+      }
+    });
+  }
 
   // запускаем сервер на одном порту
   const PORT = process.env.PORT || 3000;

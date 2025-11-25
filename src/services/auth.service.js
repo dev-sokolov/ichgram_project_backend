@@ -67,7 +67,30 @@ export const addUser = async (data) => {
         `
     };
 
-    await sendEmailWithNodemailer(verifyEmail);
+    // await sendEmailWithNodemailer(verifyEmail);
+    // --------------------------------------------------------
+
+    // Отправляем письмо через try/catch
+    // try {
+    //     await sendEmailWithNodemailer(verifyEmail);
+    // } catch (error) {
+    //     console.error("Email sending failed:", error);
+    //     // Если письмо не отправилось, продолжаем выполнение, пользователь создан
+    //     // Можно добавить поле user.emailSent = false и сохранять, если нужно
+    // }
+
+    try {
+        // Локально и на Render выводим ссылку в консоль
+        console.log(`Verification email link for ${email}: ${FRONTEND_URL}?verificationCode=${verificationCode}`);
+        // Если хочешь, можно оставить sendEmailWithNodemailer только для локалки
+        if (process.env.NODE_ENV === "development") {
+            await sendEmailWithNodemailer(verifyEmail);
+        }
+    } catch (error) {
+        console.error("Email sending failed:", error);
+    }
+
+    // --------------------------------------------------------
 
     return newUser;
 };
