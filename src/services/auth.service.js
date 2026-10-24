@@ -24,9 +24,11 @@ export const login = async ({ email, password }) => {
 
     if (!user) throw HttpExeption(401, `User not found`);
 
-    if (!user.verify) {
-        throw HttpExeption(403, "Please verify your email before logging in");
-    }
+    // Снята верификация через e-mail
+
+    // if (!user.verify) {
+    //     throw HttpExeption(403, "Please verify your email before logging in");
+    // }
 
     const passwordCompare = await bcrypt.compare(password, user.password);
     if (!passwordCompare) throw HttpExeption(401, "Password invalid");
