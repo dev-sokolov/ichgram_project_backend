@@ -1,10 +1,12 @@
 import { Router } from "express"
 
-import { addMessageController, getConversationController } from "../controllers/messages.controller.js";
+import { addMessageController, getConversationController, getShowcaseController } from "../controllers/messages.controller.js";
 
 import { authenticate } from "../middlewares/authorization.js";
 
 const messagesRouter = Router();
+
+messagesRouter.get("/showcase", getShowcaseController);
 
 messagesRouter.post("/:recipientId", authenticate, addMessageController);
 

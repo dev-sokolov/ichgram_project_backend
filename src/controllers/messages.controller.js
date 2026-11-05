@@ -30,6 +30,15 @@ export const addMessageController = async (req, res, next) => {
     }
 };
 
+export const getShowcaseController = async (req, res, next) => {
+    try {
+        const result = await messagesService.getShowcaseConversations();
+        res.json(result);
+    } catch (err) {
+        next(err);
+    }
+};
+
 export const getConversationController = async (req, res, next) => {
     try {
         const { userId } = req.params; 

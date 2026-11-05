@@ -3,8 +3,10 @@ import express from "express";
 import cors from "cors";
 import path from "node:path";
 import http from "http";
+import jwt from "jsonwebtoken";
 import { Server as IOServer } from "socket.io";
 import Message from "./db/Message.js";
+import User from "./db/User.js";
 
 import notFoundHandler from "./middlewares/notFoundHandler.js";
 import errorHandler from "./middlewares/errorHandler.js";
@@ -50,8 +52,21 @@ const startServer = () => {
   io.on("connection", (socket) => {
     console.log("New client connected");
 
-    socket.on("join", (userId) => {
-      socket.join(userId.toString());
+    socket.on("join", async (userId) => {
+      try {
+        const token = socket.handshake.auth?.token;
+        if (!token || !userId || !process.env.JWT_SECRET) return;
+
+        const { id } = jwt.verify(token, process.env.JWT_SECRET);
+        if (String(id) !== String(userId)) return;
+
+        const user = await User.findById(id).select("token");
+        if (!user || user.token !== token) return;
+
+        socket.join(String(id));
+      } catch {
+        return;
+      }
     });
 
     socket.on("disconnect", () => {

@@ -16,6 +16,9 @@ const postSchema = new Schema({
         ref: "user",
         required: true,
     },
+    seedKey: {
+        type: String,
+    },
 }, { versionKey: false, timestamps: true });
 
 const Post = model("post", postSchema);

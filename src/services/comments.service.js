@@ -24,6 +24,5 @@ export const getCommentsCountByPost = async (postId) => {
 };
 
 export const getCommentsByPost = async (postId) => {
-    const count = await Comment.find({ post: postId }).populate("user");
-    return count;
+    return Comment.find({ post: postId }).populate("user", "username avatar fullName");
 };

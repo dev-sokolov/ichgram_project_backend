@@ -3,7 +3,9 @@ import streamifier from "streamifier";
 
 import User from "../db/User.js"
 
-export const getUserById = (id) => User.findById(id).select("-password");
+const publicUserFields = "-password -token -verificationCode";
+
+export const getUserById = (id) => User.findById(id).select(publicUserFields);
 
 export const updateUserData = async ({ id, payload, files }) => {
   const user = await User.findById(id);
@@ -35,18 +37,16 @@ export const updateUserData = async ({ id, payload, files }) => {
     payload.avatarId = uploadResult.public_id;
   }
 
-  const updatedUser = await User.findByIdAndUpdate(id, { $set: payload }, {
+  return User.findByIdAndUpdate(id, { $set: payload }, {
     new: true,
     runValidators: true,
-  });
-
-  return updatedUser;
+  }).select(publicUserFields);
 };
 
-export const getAllUsers = () => User.find().populate("posts");
+export const getAllUsers = () => User.find().select(publicUserFields).populate("posts");
 
 export const getUsersByUsername = async (username) => {
   return User.find({
     username: { $regex: username, $options: "i" }
-  }).select("-password");
+  }).select(publicUserFields);
 };

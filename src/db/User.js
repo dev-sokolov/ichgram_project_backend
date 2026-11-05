@@ -61,6 +61,10 @@ const userSchema = new Schema({
         type: Boolean,
         default: false,
     },
+    accountType: {
+        type: String,
+        enum: ["member", "showcase", "demo"],
+    },
 
 }, { versionKey: false, timestamps: true });
 

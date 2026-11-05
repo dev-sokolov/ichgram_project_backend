@@ -49,9 +49,9 @@ export const unfollowById = async (follower, following) => {
 }
 
 export const getFollowers = async (userId) => {
-    return await Follow.find({ following: userId }).populate("follower", "-password");
+    return await Follow.find({ following: userId }).populate("follower", "-password -token -verificationCode");
 }
 
 export const getFollowings = async (userId) => {
-    return await Follow.find({ follower: userId }).populate("following", "-password");
+    return await Follow.find({ follower: userId }).populate("following", "-password -token -verificationCode");
 }

@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { nanoid } from "nanoid";
 
+import { isDemoAccount, resetDemoWorkspace } from "./demoSeed.service.js";
+
 import sendEmailWithNodemailer from "../utils/sendEmailWithNodemailer.js";
 
 import HttpExeption from "../utils/HttpExeption.js";
@@ -33,15 +35,21 @@ export const login = async ({ email, password }) => {
     const passwordCompare = await bcrypt.compare(password, user.password);
     if (!passwordCompare) throw HttpExeption(401, "Password invalid");
 
-    const token = createToken(user);
-    user.token = token;
-    await user.save();
+    let sessionUser = user;
+    if (isDemoAccount(user)) {
+        await resetDemoWorkspace(user._id);
+        sessionUser = await User.findById(user._id);
+    }
+
+    const token = createToken(sessionUser);
+    sessionUser.token = token;
+    await sessionUser.save();
 
     return {
         token,
         user: {
-            email: user.email,
-            fullName: user.fullName,
+            email: sessionUser.email,
+            fullName: sessionUser.fullName,
         },
     };
 };
