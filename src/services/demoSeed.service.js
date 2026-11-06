@@ -23,6 +23,9 @@ import {
 const avatarFor = (seed) =>
     `https://api.dicebear.com/9.x/lorelei/png?seed=${encodeURIComponent(seed)}&size=256`;
 
+const DEMO_AVATAR =
+    "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&h=400&q=80";
+
 const image = (id) =>
     `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1200&q=80`;
 
@@ -118,7 +121,7 @@ const DEMO_PROFILE = {
     fullName: "Alex Rivera",
     description: "Product designer exploring cities, coffee, and quiet morning light.",
     link: "ichgram.com/alex.demo",
-    avatar: avatarFor("AlexRivera"),
+    avatar: DEMO_AVATAR,
     avatarId: "",
     verify: true,
     verificationCode: "",
@@ -400,6 +403,13 @@ export const ensureDemoContent = async () => {
 
     const demo = await ensureDemoUser();
     if (!demo) return;
+
+    if (demo.avatar !== DEMO_PROFILE.avatar) {
+        await destroyCloudinaryAsset(demo.avatarId);
+        demo.avatar = DEMO_PROFILE.avatar;
+        demo.avatarId = "";
+        await demo.save();
+    }
 
     const demoPosts = await Post.countDocuments({
         author: demo._id,
